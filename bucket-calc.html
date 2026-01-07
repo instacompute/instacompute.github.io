@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retirement Planning Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #2d3748;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: #2d3748;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+        
+        h3 {
+            color: #4a5568;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric {
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid;
+        }
+        
+        .metric.green {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+            border-color: #48bb78;
+        }
+        
+        .metric.blue {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-color: #4299e1;
+        }
+        
+        .metric.purple {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-color: #9f7aea;
+        }
+        
+        .metric.emerald {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-color: #38b2ac;
+        }
+        
+        .metric.red {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            border-color: #f56565;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2d3748;
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #1a202c;
+        }
+        
+        .inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        input, select {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .input-with-button {
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-end;
+        }
+        
+        .input-with-button > div {
+            flex: 1;
+        }
+        
+        .refresh-button {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+            white-space: nowrap;
+            height: 48px;
+        }
+        
+        .refresh-button:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .refresh-button:active {
+            transform: translateY(0);
+        }
+        
+        .chart-container {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+        
+        #portfolioChart {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: right;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        th {
+            background: #edf2f7;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        td {
+            color: #4a5568;
+        }
+        
+        tr:hover {
+            background: #f7fafc;
+        }
+        
+        .insights {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        
+        .insights h3 {
+            color: white;
+            margin-bottom: 15px;
+        }
+        
+        .insights ul {
+            list-style: none;
+        }
+        
+        .insights li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        .warning {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #fc8181;
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+            .inputs { grid-template-columns: 1fr; }
+            .metrics { grid-template-columns: 1fr; }
+            .input-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🏦 Retirement Planning Calculator</h1>
+            <p class="subtitle">For educational purposes only. Not financial advice. Consult a professional advisor.</p>
+            
+            <div id="metrics" class="metrics"></div>
+            
+            <div class="inputs">
+                <div class="input-section">
+                    <h3>👤 Personal Details</h3>
+                    
+                    <div class="input-group">
+                        <label>Retirement Age</label>
+                        <input type="number" id="retirementAge" value="37">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Years in Retirement</label>
+                        <input type="number" id="yearsInRetirement" value="66">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Monthly Expenses (₹ Lakhs)</label>
+			<input type="number" step="0.1" id="monthlyExpenses" value="1.5">
+		    </div>
+
+		    <div class="input-group">
+			    <label>Withdrawal Strategy</label>
+			    <select id="withdrawalStrategy">
+				    <option value="balanced">Balanced (Proportional)</option>
+				    <option value="conservative" selected>Conservative (Debt First)</option>
+				    <option value="aggressive">Aggressive (Equity First)</option>
+			    </select>
+		    </div>
+
+		    <div class="input-with-button">
+			    <div class="input-group">
+				    <label>Simulation Model</label>
+				    <select id="simulationModel">
+					    <option value="deterministic" selected>Deterministic (Fixed Returns)</option>
+					    <option value="monteCarlo">Monte Carlo (Single Run)</option>
+					    <option value="monteCarloBatch">Monte Carlo Batch (Multiple Runs)</option>
+					    <option value="historical">Historical (Nifty50 Based)</option>
+				    </select>
+			    </div>
+			    <button class="refresh-button" onclick="calculate()">🔄 Run</button>
+		    </div>
+
+		    <div class="input-group" id="monteCarloRunsInput" style="display: none;">
+			    <label>Monte Carlo Runs</label>
+			    <input type="number" step="100" id="monteCarloRuns" value="1000">
+		    </div>
+
+		    <div class="input-group" id="equityStdDevInput" style="display: none;">
+			    <label>Equity Std Deviation (%)</label>
+			    <input type="number" step="1" id="equityStdDev" value="15">
+		    </div>
+
+		    <div class="input-group" id="debtStdDevInput" style="display: none;">
+			    <label>Debt Std Deviation (%)</label>
+			    <input type="number" step="0.5" id="debtStdDev" value="3">
+		    </div>
+
+		    <div class="input-group">
+			    <label>Age to Stop PPF (Move to Debt)</label>
+			    <input type="number" step="1" id="ppfStopAge" value="80">
+		    </div>
+
+		    <div class="input-group">
+			    <label>Annual PPF Investment (₹ Lakhs)</label>
+			    <input type="number" step="0.1" id="annualPPFInvestment" value="3">
+		    </div>
+
+		    <div class="input-group">
+			    <label>Max Equity % (Trigger Rebalancing)</label>
+			    <input type="number" step="1" id="maxEquityPercent" value="70">
+		    </div>
+
+		    <div class="input-group">
+			    <label>Debt Bucket (Years of Expenses)</label>
+			    <input type="number" step="1" id="debtBucketYears" value="15">
+		    </div>
+		</div>
+
+		<div class="input-section">
+			<h3>💰 Initial Portfolio (₹ Crores)</h3>
+
+			<div class="input-group">
+				<label>Equity Funds</label>
+				<input type="number" step="0.01" id="equityFunds" value="5.5">
+			</div>
+
+			<div class="input-group">
+				<label>Debt Funds</label>
+				<input type="number" step="0.01" id="debtFunds" value="3.2">
+			</div>
+
+			<div class="input-group">
+				<label>PPF Funds</label>
+				<input type="number" step="0.01" id="ppfFunds" value="0.5">
+			</div>
+
+			<h3 style="margin-top: 20px;">📈 Return Rates (%)</h3>
+
+			<div class="input-grid">
+				<div class="input-group">
+					<label>Inflation</label>
+					<input type="number" step="0.1" id="inflationRate" value="7.0">
+				</div>
+
+				<div class="input-group">
+					<label>Equity Return</label>
+					<input type="number" step="0.1" id="equityReturn" value="9.6">
+				</div>
+
+				<div class="input-group">
+					<label>Debt Return</label>
+					<input type="number" step="0.1" id="debtReturn" value="5.2">
+				</div>
+
+				<div class="input-group">
+					<label>PPF Return</label>
+					<input type="number" step="0.1" id="ppfReturn" value="7.1">
+				</div>
+			</div>
+		</div>
+	    </div>
+	</div>
+
+	<div class="card" id="monteCarloResults" style="display: none;">
+		<h2>🎲 Monte Carlo Batch Results</h2>
+		<div id="monteCarloSummary"></div>
+		<div class="chart-container">
+			<canvas id="monteCarloChart" width="800" height="400"></canvas>
+		</div>
+	</div>
+
+	<div class="card">
+		<h2>📊 Year-by-Year Projection</h2>
+		<div class="chart-container">
+			<canvas id="portfolioChart" width="800" height="400"></canvas>
+		</div>
+	</div>
+
+	<div class="card">
+		<h2>📋 Detailed Table</h2>
+		<div class="chart-container">
+			<div id="tableContainer"></div>
+		</div>
+	</div>
+
+	<div class="insights" id="insights"></div>
+    </div>
+
+    <script>
+	    function formatCurrency(value) {
+		    if (value >= 1) {
+			    return `₹${value.toFixed(2)} Cr`;
+		    } else {
+			    return `₹${(value * 100).toFixed(2)} L`;
+		    }
+	    }
+
+	    // Historical Nifty50 annual returns (approximated based on historical data)
+	    // Data represents annual returns from 2000-2024 (simplified for demonstration)
+	    const nifty50HistoricalReturns = [
+		    -18.2, -13.5, 3.7, 73.1, 13.9, 40.0, 39.7, 55.0, -51.8, 75.8,
+		    17.4, -24.6, 16.0, 6.9, 31.4, -4.1, 10.2, 28.7, 5.9, 14.5,
+		    15.5, -7.9, 13.1, 18.9, 24.1, 4.4, 16.8
+	    ];
+
+	    // Generate random normal distribution for Monte Carlo
+	    function randomNormal(mean, stdDev) {
+		    let u = 0, v = 0;
+		    while(u === 0) u = Math.random();
+		    while(v === 0) v = Math.random();
+		    const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+		    return mean + stdDev * z;
+	    }
+
+	    // Get returns based on simulation model
+	    function getReturns(model, year, equityReturn, debtReturn, ppfReturn, equityStdDev, debtStdDev) {
+		    if (model === 'deterministic') {
+			    return {
+				    equity: equityReturn,
+				    debt: debtReturn,
+				    ppf: ppfReturn
+			    };
+		    } else if (model === 'monteCarlo' || model === 'monteCarloBatch') {
+			    // Monte Carlo: Use normal distribution with volatility
+			    // Use custom std deviations if provided, otherwise use defaults
+			    const eStdDev = equityStdDev !== undefined ? equityStdDev : 15;
+			    const dStdDev = debtStdDev !== undefined ? debtStdDev : 3;
+
+			    return {
+				    equity: randomNormal(equityReturn, eStdDev),
+				    debt: randomNormal(debtReturn, dStdDev),
+				    ppf: ppfReturn  // Fixed rate, no randomness
+			    };
+		    } else if (model === 'historical') {
+			    // Historical: Use Nifty50 historical returns
+			    const historicalIndex = year % nifty50HistoricalReturns.length;
+			    const niftyReturn = nifty50HistoricalReturns[historicalIndex];
+
+			    // Adjust debt and PPF returns based on equity performance
+			    // In bad equity years, debt tends to do relatively better
+			    const debtAdjustment = niftyReturn < 0 ? 1 : -0.5;
+
+			    return {
+				    equity: niftyReturn,
+				    debt: debtReturn + debtAdjustment,
+				    ppf: ppfReturn + (debtAdjustment * 0.5)
+			    };
+		    }
+		    return { equity: equityReturn, debt: debtReturn, ppf: ppfReturn };
+	    }
+
+	    // Run Monte Carlo batch simulation
+	    function runMonteCarloBatch(numRuns, params) {
+		    const failures = [];
+		    const depletionAges = [];
+		    const finalBalances = [];
+
+		    for (let run = 0; run < numRuns; run++) {
+			    const result = runSingleSimulation(params, 'monteCarlo');
+
+			    if (result.fundsDepleted !== null) {
+				    failures.push(run);
+				    depletionAges.push(params.retirementAge + result.fundsDepleted);
+			    } else {
+				    finalBalances.push(result.finalBalance);
+			    }
+		    }
+
+		    const failureRate = (failures.length / numRuns) * 100;
+		    const successRate = 100 - failureRate;
+
+		    return {
+			    numRuns,
+			    failures: failures.length,
+			    successes: numRuns - failures.length,
+			    failureRate,
+			    successRate,
+			    depletionAges,
+			    finalBalances,
+			    avgDepletionAge: depletionAges.length > 0 ? depletionAges.reduce((a,b) => a+b, 0) / depletionAges.length : null,
+			    avgFinalBalance: finalBalances.length > 0 ? finalBalances.reduce((a,b) => a+b, 0) / finalBalances.length : null
+		    };
+	    }
+
+	    // Run a single simulation (extracted from calculate function)
+	    function runSingleSimulation(params, model) {
+		    let equityBalance = params.equityFunds;
+		    let debtBalance = params.debtFunds;
+		    let ppfBalance = params.ppfFunds;
+		    let currentAnnualExpenses = params.annualExpenses;
+		    let fundsDepleted = null;
+		    let ppfStopped = false;
+
+		    for (let year = 0; year <= params.yearsInRetirement; year++) {
+			      const currentAge = params.retirementAge + year;
+
+			      if (year > 0) {
+				      currentAnnualExpenses *= (1 + params.inflationRate / 100);
+			      }
+
+			    // PPF stop logic
+			    if (currentAge >= params.ppfStopAge && !ppfStopped && ppfBalance > 0) {
+				    debtBalance += ppfBalance;
+				    ppfBalance = 0;
+				    ppfStopped = true;
+			    } else if (!ppfStopped && currentAge < params.ppfStopAge && debtBalance >= params.annualPPFInvestment) {
+				    debtBalance -= params.annualPPFInvestment;
+				    ppfBalance += params.annualPPFInvestment;
+			    }
+
+			    let totalBalance = equityBalance + debtBalance + ppfBalance;
+
+			    // Rebalancing logic (simplified for batch)
+			    let equityPercent = totalBalance > 0 ? (equityBalance / totalBalance) * 100 : 0;
+			    if (equityPercent > params.maxEquityPercent && totalBalance > 0) {
+				    const targetDebtBalance = params.debtBucketYears * currentAnnualExpenses;
+				    const debtShortfall = targetDebtBalance - debtBalance;
+				    const targetEquityBalance = (params.maxEquityPercent / 100) * totalBalance;
+				    const excessEquity = equityBalance - targetEquityBalance;
+				    const amountToRebalance = Math.max(debtShortfall, excessEquity);
+
+				    if (amountToRebalance > equityBalance && equityBalance > 0.01) {
+					    debtBalance += equityBalance;
+					    equityBalance = 0;
+				    } else if (amountToRebalance > 0.01 && equityBalance >= amountToRebalance) {
+					    equityBalance -= amountToRebalance;
+					    debtBalance += amountToRebalance;
+				    }
+			    }
+
+			    totalBalance = equityBalance + debtBalance + ppfBalance;
+
+			    if (currentAnnualExpenses > totalBalance && fundsDepleted === null) {
+				    fundsDepleted = year;
+				    break; // Stop simulation once depleted
+			    }
+
+			    // Withdrawals (conservative strategy for batch)
+			    let withdrawalFromDebt = Math.min(currentAnnualExpenses, debtBalance);
+			    let remaining = currentAnnualExpenses - withdrawalFromDebt;
+
+			    if (remaining > 0) {
+				    let withdrawalFromPPF = Math.min(remaining, ppfBalance);
+				    remaining -= withdrawalFromPPF;
+
+				    if (remaining > 0) {
+					    let withdrawalFromEquity = Math.min(remaining, equityBalance);
+					    equityBalance -= withdrawalFromEquity;
+				    }
+				    ppfBalance -= withdrawalFromPPF;
+			    }
+			    debtBalance -= withdrawalFromDebt;
+
+			    equityBalance = Math.max(0, equityBalance);
+			    debtBalance = Math.max(0, debtBalance);
+			    ppfBalance = Math.max(0, ppfBalance);
+
+			    // Apply returns
+			    const yearReturns = getReturns(model, year, params.baseEquityReturn, params.baseDebtReturn, params.basePPFReturn, params.equityStdDev, params.debtStdDev);
+
+			    equityBalance *= (1 + yearReturns.equity / 100);
+			    debtBalance *= (1 + yearReturns.debt / 100);
+			    if (!ppfStopped) {
+				    ppfBalance *= (1 + yearReturns.ppf / 100);
+			    }
+
+			    equityBalance = Math.max(0, equityBalance);
+			    debtBalance = Math.max(0, debtBalance);
+			    ppfBalance = Math.max(0, ppfBalance);
+		    }
+
+		    const finalBalance = equityBalance + debtBalance + ppfBalance;
+
+		    return {
+			    fundsDepleted,
+			    finalBalance
+		    };
+	    }
+
+	    function calculate() {
+		    // Get inputs
+		    const retirementAge = parseFloat(document.getElementById('retirementAge').value);
+		    const yearsInRetirement = parseFloat(document.getElementById('yearsInRetirement').value);
+		    const monthlyExpenses = parseFloat(document.getElementById('monthlyExpenses').value);
+		    const withdrawalStrategy = document.getElementById('withdrawalStrategy').value;
+		    const simulationModel = document.getElementById('simulationModel').value;
+		    const maxEquityPercent = parseFloat(document.getElementById('maxEquityPercent').value);
+		    const debtBucketYears = parseFloat(document.getElementById('debtBucketYears').value);
+		    const ppfStopAge = parseFloat(document.getElementById('ppfStopAge').value);
+		    const annualPPFInvestment = parseFloat(document.getElementById('annualPPFInvestment').value) / 100; // Convert lakhs to crores
+
+		    let equityFunds = parseFloat(document.getElementById('equityFunds').value);
+		    let debtFunds = parseFloat(document.getElementById('debtFunds').value);
+		    let ppfFunds = parseFloat(document.getElementById('ppfFunds').value);
+
+		    const inflationRate = parseFloat(document.getElementById('inflationRate').value);
+		    const baseEquityReturn = parseFloat(document.getElementById('equityReturn').value);
+		    const baseDebtReturn = parseFloat(document.getElementById('debtReturn').value);
+		    const basePPFReturn = parseFloat(document.getElementById('ppfReturn').value);
+
+		    // Get std deviations for Monte Carlo
+		    const equityStdDev = parseFloat(document.getElementById('equityStdDev').value) || 15;
+		    const debtStdDev = parseFloat(document.getElementById('debtStdDev').value) || 3;
+
+		    const totalInitialCorpus = equityFunds + debtFunds + ppfFunds;
+		    const annualExpenses = monthlyExpenses * 12 / 100;
+
+		    // Check if Monte Carlo Batch mode
+		    if (simulationModel === 'monteCarloBatch') {
+			    const numRuns = parseInt(document.getElementById('monteCarloRuns').value) || 1000;
+
+			    const params = {
+				    retirementAge,
+				    yearsInRetirement,
+				    equityFunds,
+				    debtFunds,
+				    ppfFunds,
+				    inflationRate,
+				    baseEquityReturn,
+				    baseDebtReturn,
+				    basePPFReturn,
+				    equityStdDev,
+				    debtStdDev,
+				    maxEquityPercent,
+				    debtBucketYears,
+				    ppfStopAge,
+				    annualPPFInvestment,
+				    annualExpenses
+			    };
+
+			    // Show progress message
+			    document.getElementById('monteCarloResults').style.display = 'block';
+			    document.getElementById('monteCarloSummary').innerHTML = '<p>Running simulations... Please wait.</p>';
+
+			    // Run batch simulation with a small delay to show message
+			    setTimeout(() => {
+				    const batchResults = runMonteCarloBatch(numRuns, params);
+				    displayMonteCarloBatchResults(batchResults, params);
+
+				    // Run one simulation to show in the table
+				    runNormalCalculation(simulationModel, totalInitialCorpus, annualExpenses, equityFunds, debtFunds, ppfFunds, 
+					    retirementAge, yearsInRetirement, inflationRate, baseEquityReturn, baseDebtReturn, basePPFReturn,
+					    maxEquityPercent, debtBucketYears, ppfStopAge, annualPPFInvestment, withdrawalStrategy, equityStdDev, debtStdDev);
+			    }, 100);
+
+			    return;
+		    } else {
+			    document.getElementById('monteCarloResults').style.display = 'none';
+		    }
+
+		    // Normal calculation for single run
+		    runNormalCalculation(simulationModel, totalInitialCorpus, annualExpenses, equityFunds, debtFunds, ppfFunds, 
+			    retirementAge, yearsInRetirement, inflationRate, baseEquityReturn, baseDebtReturn, basePPFReturn,
+			    maxEquityPercent, debtBucketYears, ppfStopAge, annualPPFInvestment, withdrawalStrategy, equityStdDev, debtStdDev);
+	    }
+
+	    function runNormalCalculation(simulationModel, totalInitialCorpus, annualExpenses, equityFunds, debtFunds, ppfFunds,
+		    retirementAge, yearsInRetirement, inflationRate, baseEquityReturn, baseDebtReturn, basePPFReturn,
+		    maxEquityPercent, debtBucketYears, ppfStopAge, annualPPFInvestment, withdrawalStrategy, equityStdDev, debtStdDev) {
+
+		    let projections = [];
+		    let equityBalance = equityFunds;
+		    let debtBalance = debtFunds;
+		    let ppfBalance = ppfFunds;
+		    let currentAnnualExpenses = annualExpenses;
+		    let fundsDepleted = null;
+		    let rebalancingEvents = 0;
+		    let ppfStopped = false;
+
+		    for (let year = 0; year <= yearsInRetirement; year++) {
+			      const currentAge = retirementAge + year;
+			      const calendarYear = 2026 + year;
+
+			      if (year > 0) {
+				      currentAnnualExpenses *= (1 + inflationRate / 100);
+			      }
+
+			    // Check if PPF should be stopped and moved to debt
+			    let ppfStoppedThisYear = false;
+			    let ppfInvestedThisYear = false;
+			    if (currentAge >= ppfStopAge && !ppfStopped && ppfBalance > 0) {
+				    debtBalance += ppfBalance;
+				    ppfBalance = 0;
+				    ppfStopped = true;
+				    ppfStoppedThisYear = true;
+			    } else if (!ppfStopped && currentAge < ppfStopAge && debtBalance >= annualPPFInvestment) {
+				    // Move annual PPF investment from debt to PPF (before PPF is stopped)
+				    debtBalance -= annualPPFInvestment;
+				    ppfBalance += annualPPFInvestment;
+				    ppfInvestedThisYear = true;
+			    }
+
+			    let totalBalance = equityBalance + debtBalance + ppfBalance;
+
+			    // Calculate equity percentage (will check for rebalancing after withdrawals)
+			    let equityPercent = totalBalance > 0 ? (equityBalance / totalBalance) * 100 : 0;
+			    let rebalanced = false; // Will be set after withdrawals
+
+			    // Check if expenses exceed total balance (fund depleted for this year)
+			    const fundsDepletedThisYear = currentAnnualExpenses > totalBalance;
+
+			    if (totalBalance < 0.01 && fundsDepleted === null) {
+			      fundsDepleted = year;
+			      }
+
+			      // Withdrawal logic
+			      let withdrawalFromEquity = 0;
+			      let withdrawalFromDebt = 0;
+			      let withdrawalFromPPF = 0;
+			      let debtInsufficient = false;
+			      let tappedEquity = false;
+
+			      if (totalBalance > 0) {
+				      if (withdrawalStrategy === 'balanced') {
+					      const equityProp = equityBalance / totalBalance;
+					      const debtProp = debtBalance / totalBalance;
+					      const ppfProp = ppfBalance / totalBalance;
+
+					      withdrawalFromEquity = Math.min(currentAnnualExpenses * equityProp, equityBalance);
+					      withdrawalFromDebt = Math.min(currentAnnualExpenses * debtProp, debtBalance);
+					      withdrawalFromPPF = Math.min(currentAnnualExpenses * ppfProp, ppfBalance);
+
+					      const totalWithdrawn = withdrawalFromEquity + withdrawalFromDebt + withdrawalFromPPF;
+					      const remaining = currentAnnualExpenses - totalWithdrawn;
+
+					      if (remaining > 0) {
+						      if (debtBalance > withdrawalFromDebt) {
+							      withdrawalFromDebt += Math.min(remaining, debtBalance - withdrawalFromDebt);
+						      } else if (equityBalance > withdrawalFromEquity) {
+							      withdrawalFromEquity += Math.min(remaining, equityBalance - withdrawalFromEquity);
+						      }
+					      }
+				      } else if (withdrawalStrategy === 'conservative') {
+					      withdrawalFromDebt = Math.min(currentAnnualExpenses, debtBalance);
+					      let remaining = currentAnnualExpenses - withdrawalFromDebt;
+
+					      // Check if debt was insufficient for expenses
+					      if (remaining > 0.01 && debtBalance < currentAnnualExpenses) {
+			      debtInsufficient = true;
+			      }
+
+			      if (remaining > 0) {
+				      withdrawalFromPPF = Math.min(remaining, ppfBalance);
+				      remaining -= withdrawalFromPPF;
+
+				      if (remaining > 0) {
+					      withdrawalFromEquity = Math.min(remaining, equityBalance);
+					      // Mark that equity was tapped due to debt/PPF insufficiency
+					      if (withdrawalFromEquity > 0) {
+						      tappedEquity = true;
+					      }
+				      }
+			      }
+				      } else { // aggressive
+					      withdrawalFromEquity = Math.min(currentAnnualExpenses, equityBalance);
+					      let remaining = currentAnnualExpenses - withdrawalFromEquity;
+
+					      if (remaining > 0) {
+						      withdrawalFromDebt = Math.min(remaining, debtBalance);
+						      remaining -= withdrawalFromDebt;
+
+						      if (remaining > 0) {
+							      withdrawalFromPPF = Math.min(remaining, ppfBalance);
+						      }
+					      }
+				      }
+			      }
+
+			    // Apply withdrawals FIRST
+			    equityBalance -= withdrawalFromEquity;
+			    debtBalance -= withdrawalFromDebt;
+			    ppfBalance -= withdrawalFromPPF;
+
+			    // Ensure balances don't go negative after withdrawals
+			    equityBalance = Math.max(0, equityBalance);
+			    debtBalance = Math.max(0, debtBalance);
+			    ppfBalance = Math.max(0, ppfBalance);
+
+			    // NOW CHECK FOR REBALANCING AFTER WITHDRAWALS
+			    // (so the equity % shown in table reflects post-rebalancing state)
+			    totalBalance = equityBalance + debtBalance + ppfBalance;
+			    let equityPercentAfterWithdrawals = totalBalance > 0 ? (equityBalance / totalBalance) * 100 : 0;
+			    let rebalanceAmount = 0;
+			    let allEquityMoved = false;
+
+			    if (equityPercentAfterWithdrawals > maxEquityPercent && totalBalance > 0) {
+				    // Calculate target debt balance (N years of current expenses)
+                    const targetDebtBalance = debtBucketYears * currentAnnualExpenses;
+                    
+                    // Calculate how much we need to move from equity to debt to reach target
+                    const debtShortfall = targetDebtBalance - debtBalance;
+                    
+                    // Also calculate how much to move to bring equity down to threshold
+                    const targetEquityBalance = (maxEquityPercent / 100) * totalBalance;
+                    const excessEquity = equityBalance - targetEquityBalance;
+                    
+                    // Use the LARGER of the two amounts (more conservative approach)
+                    const amountToRebalance = Math.max(debtShortfall, excessEquity);
+                    
+                    // Check if we can't fully fund the debt bucket - if so, move ALL equity to debt
+                    if (amountToRebalance > equityBalance && equityBalance > 0.01) {
+                        // Can't reach target - move all equity to debt
+                        rebalanceAmount = equityBalance;
+                        debtBalance += equityBalance;
+                        equityBalance = 0;
+                        rebalanced = true;
+                        allEquityMoved = true;
+                        rebalancingEvents++;
+                    } else if (amountToRebalance > 0.01 && equityBalance >= amountToRebalance) {
+                        // Normal rebalancing
+                        equityBalance -= amountToRebalance;
+                        debtBalance += amountToRebalance;
+                        rebalanced = true;
+                        rebalanceAmount = amountToRebalance;
+                        rebalancingEvents++;
+                    }
+                }
+                
+                // Now record the balances AFTER withdrawals AND rebalancing
+                const balanceAfterWithdrawals = equityBalance + debtBalance + ppfBalance;
+                
+                // Determine status message with priority (AFTER rebalancing so we have rebalanceAmount)
+                let statusMessage = '✓';
+                if (fundsDepletedThisYear) {
+                    statusMessage = '🚨 DEPLETED';
+                } else if (ppfStoppedThisYear) {
+                    statusMessage = '📤 PPF→Debt';
+                } else if (allEquityMoved) {
+                    statusMessage = `🔄 ALL Equity→Debt (${formatCurrency(rebalanceAmount)})`;
+                } else if (rebalanced && ppfInvestedThisYear) {
+                    statusMessage = `🔄 Equity→Debt ${formatCurrency(rebalanceAmount)} + 💰 PPF`;
+                } else if (rebalanced) {
+                    statusMessage = `🔄 Equity→Debt ${formatCurrency(rebalanceAmount)}`;
+                } else if (ppfInvestedThisYear) {
+                    statusMessage = '💰 Debt→PPF';
+                } else if (tappedEquity && debtInsufficient) {
+                    statusMessage = '⚠️ Equity Tapped';
+                } else if (debtInsufficient) {
+                    statusMessage = '⚠️ Debt Low';
+                }
+                
+                projections.push({
+                    year: calendarYear,
+                    age: currentAge,
+                    inflationRate: inflationRate,
+                    equityReturn: null, // Will be populated after growth
+                    debtReturn: null,
+                    ppfReturn: null,
+                    equityBalance: equityBalance,
+                    debtBalance: debtBalance,
+                    ppfBalance: ppfBalance,
+                    totalBalance: balanceAfterWithdrawals,
+                    annualExpenses: currentAnnualExpenses,
+                    equityPercent: balanceAfterWithdrawals > 0 ? (equityBalance / balanceAfterWithdrawals) * 100 : 0,
+                    rebalanced: rebalanced,
+                    rebalanceAmount: rebalanceAmount,
+                    allEquityMoved: allEquityMoved,
+                    ppfStoppedThisYear: ppfStoppedThisYear,
+                    ppfInvestedThisYear: ppfInvestedThisYear,
+                    statusMessage: statusMessage,
+                    debtInsufficient: debtInsufficient,
+                    tappedEquity: tappedEquity,
+                    fundsDepletedThisYear: fundsDepletedThisYear
+                });
+                
+                // Apply returns for next year (only if PPF hasn't been moved to debt)
+                // Get returns based on simulation model
+                const yearReturns = getReturns(simulationModel, year, baseEquityReturn, baseDebtReturn, basePPFReturn, equityStdDev, debtStdDev);
+                
+                // Store the returns in the projection (for display in table)
+                projections[projections.length - 1].equityReturn = yearReturns.equity;
+                projections[projections.length - 1].debtReturn = yearReturns.debt;
+                projections[projections.length - 1].ppfReturn = yearReturns.ppf;
+                
+                equityBalance *= (1 + yearReturns.equity / 100);
+                debtBalance *= (1 + yearReturns.debt / 100);
+                if (!ppfStopped) {
+                    ppfBalance *= (1 + yearReturns.ppf / 100);
+                }
+                
+                // Final check to ensure no negative balances
+                equityBalance = Math.max(0, equityBalance);
+                debtBalance = Math.max(0, debtBalance);
+                ppfBalance = Math.max(0, ppfBalance);
+            }
+            
+            const finalBalance = projections[projections.length - 1].totalBalance;
+            
+            // Update metrics
+            const metricsHTML = `
+                <div class="metric green">
+                    <div class="metric-label">Initial Corpus</div>
+                    <div class="metric-value">${formatCurrency(totalInitialCorpus)}</div>
+                </div>
+                <div class="metric blue">
+                    <div class="metric-label">Retirement Age</div>
+                    <div class="metric-value">${retirementAge} years</div>
+                </div>
+                <div class="metric purple">
+                    <div class="metric-label">Final Balance</div>
+                    <div class="metric-value">${formatCurrency(finalBalance)}</div>
+                </div>
+                <div class="metric ${fundsDepleted ? 'red' : 'emerald'}">
+                    <div class="metric-label">Fund Status</div>
+                    <div class="metric-value">${fundsDepleted ? `Depletes at ${retirementAge + fundsDepleted}` : 'Sustainable ✓'}</div>
+                </div>
+            `;
+            document.getElementById('metrics').innerHTML = metricsHTML;
+            
+            // Draw chart
+            drawChart(projections);
+            
+            // Create table - SHOW ALL YEARS
+            let tableHTML = '<table><thead><tr><th>Year</th><th>Age</th><th>Inflation %</th><th>Equity Return %</th><th>Debt Return %</th><th>PPF Return %</th><th>Equity</th><th>Debt</th><th>PPF</th><th>Total</th><th>Equity %</th><th>Expenses</th><th>Status</th></tr></thead><tbody>';
+            
+            projections.forEach((p, i) => {
+                const equityPercentColor = p.equityPercent > maxEquityPercent ? 'color: #e53e3e; font-weight: bold;' : '';
+                
+                // Format values with red color for negatives
+                const formatWithColor = (value) => {
+                    const formatted = formatCurrency(value);
+                    return value < 0 ? `<span style="color: #e53e3e; font-weight: bold;">${formatted}</span>` : formatted;
+                };
+                
+                // Format return percentages with colors (green for positive, red for negative)
+                const formatReturn = (value) => {
+                    if (value === null) return '-';
+                    const color = value >= 0 ? '#059669' : '#e53e3e';
+                    return `<span style="color: ${color};">${value.toFixed(1)}%</span>`;
+                };
+                
+                // Format total with green color for positive, red for negative/zero
+                const formatTotal = (value) => {
+                    const formatted = formatCurrency(value);
+                    if (value > 0) {
+                        return `<span style="color: #059669; font-weight: bold;">${formatted}</span>`;
+                    } else {
+                        return `<span style="color: #e53e3e; font-weight: bold;">${formatted}</span>`;
+                    }
+                };
+                
+                // Format expenses with orange color
+                const formatExpenses = (value) => {
+                    const formatted = formatCurrency(value);
+                    return `<span style="color: #d97706; font-weight: 600;">${formatted}</span>`;
+                };
+                
+                // Check row highlighting - depleted takes priority over debt insufficient
+                let rowStyle = '';
+                if (p.fundsDepletedThisYear) {
+                    rowStyle = 'background-color: #fecaca; font-weight: bold;'; // Darker red for depleted
+                } else if (p.debtInsufficient) {
+                    rowStyle = 'background-color: #fee2e2;'; // Light red for debt insufficient
+                }
+                
+                tableHTML += `
+                    <tr style="${rowStyle}">
+                        <td>${p.year}</td>
+                        <td>${p.age}</td>
+                        <td>${p.inflationRate.toFixed(1)}%</td>
+                        <td>${formatReturn(p.equityReturn)}</td>
+                        <td>${formatReturn(p.debtReturn)}</td>
+                        <td>${formatReturn(p.ppfReturn)}</td>
+                        <td>${formatWithColor(p.equityBalance)}</td>
+                        <td>${formatWithColor(p.debtBalance)}</td>
+                        <td>${formatWithColor(p.ppfBalance)}</td>
+                        <td><strong>${formatTotal(p.totalBalance)}</strong></td>
+                        <td style="${equityPercentColor}">${p.equityPercent.toFixed(1)}%</td>
+                        <td>${formatExpenses(p.annualExpenses)}</td>
+                        <td>${p.statusMessage}</td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += '</tbody></table>';
+            document.getElementById('tableContainer').innerHTML = tableHTML;
+            
+            // Update insights
+            const modelDescription = simulationModel === 'deterministic' ? 'Fixed returns' : 
+                                    simulationModel === 'monteCarlo' ? 'Monte Carlo simulation with market volatility' :
+                                    'Historical Nifty50-based returns';
+            
+            const insightsHTML = `
+                <h3>💡 Key Insights</h3>
+                <ul>
+                    <li>• Simulation model: ${modelDescription}</li>
+                    <li>• All returns are post-tax as specified</li>
+                    <li>• Expenses increase annually with inflation at ${inflationRate}%</li>
+                    <li>• Withdrawal strategy: ${withdrawalStrategy}</li>
+                    <li>• Annual PPF investment: ₹${(annualPPFInvestment * 100).toFixed(1)} lakhs moved from debt until age ${ppfStopAge}</li>
+                    <li>• PPF stops at age ${ppfStopAge} and entire balance moves to debt</li>
+                    <li>• Bucket Strategy: Maintain ${debtBucketYears} years of expenses in debt (triggered ${rebalancingEvents} times)</li>
+                    <li>• Rebalancing: When equity > ${maxEquityPercent}%, move funds to maintain debt bucket</li>
+                    <li>• Initial corpus: ${formatCurrency(totalInitialCorpus)} will last ${fundsDepleted ? fundsDepleted : yearsInRetirement} years</li>
+                    ${fundsDepleted ? `<li class="warning">⚠️ Warning: Funds will deplete at age ${retirementAge + fundsDepleted}. Consider reducing expenses or increasing initial corpus.</li>` : '<li>✅ Your retirement plan is sustainable for the planned duration!</li>'}
+                    ${simulationModel === 'monteCarlo' ? '<li>🎲 Monte Carlo: Results will vary each run due to randomness</li>' : ''}
+                    ${simulationModel === 'historical' ? '<li>📊 Historical: Using actual Nifty50 returns pattern (2000-2024)</li>' : ''}
+                </ul>
+            `;
+            document.getElementById('insights').innerHTML = insightsHTML;
+        }
+        
+        function drawChart(projections) {
+            const canvas = document.getElementById('portfolioChart');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            const width = canvas.width = 1200;
+            const height = canvas.height = 500;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // Padding
+            const padding = { top: 40, right: 80, bottom: 60, left: 80 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+            
+            // Find max values
+            const maxTotal = Math.max(...projections.map(p => p.totalBalance));
+            const maxExpenses = Math.max(...projections.map(p => p.annualExpenses));
+            const maxValue = Math.max(maxTotal, maxExpenses);
+            
+            // Scales
+            const xScale = chartWidth / (projections.length - 1);
+            const yScale = chartHeight / maxValue;
+            
+            // Draw axes
+            ctx.strokeStyle = '#2d3748';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding.left, padding.top);
+            ctx.lineTo(padding.left, height - padding.bottom);
+            ctx.lineTo(width - padding.right, height - padding.bottom);
+            ctx.stroke();
+            
+            // Y-axis labels
+            ctx.fillStyle = '#4a5568';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 5; i++) {
+                const y = height - padding.bottom - (chartHeight / 5) * i;
+                const value = (maxValue / 5) * i;
+                ctx.fillText(formatCurrency(value), padding.left - 10, y + 4);
+                
+                // Grid lines
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padding.left, y);
+                ctx.lineTo(width - padding.right, y);
+                ctx.stroke();
+            }
+            
+            // X-axis labels (every 5 years)
+            ctx.textAlign = 'center';
+            projections.forEach((p, i) => {
+                if (i % 5 === 0) {
+                    const x = padding.left + i * xScale;
+                    ctx.fillText(p.age, x, height - padding.bottom + 20);
+                }
+            });
+            
+            // Draw stacked area chart for PPF (bottom)
+            ctx.fillStyle = 'rgba(139, 92, 246, 0.6)'; // Purple for PPF
+            ctx.beginPath();
+            ctx.moveTo(padding.left, height - padding.bottom);
+            projections.forEach((p, i) => {
+                const x = padding.left + i * xScale;
+                const y = height - padding.bottom - p.ppfBalance * yScale;
+                ctx.lineTo(x, y);
+            });
+            ctx.lineTo(padding.left + (projections.length - 1) * xScale, height - padding.bottom);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Draw stacked area chart for Debt (middle)
+            ctx.fillStyle = 'rgba(59, 130, 246, 0.6)'; // Blue for Debt
+            ctx.beginPath();
+            ctx.moveTo(padding.left, height - padding.bottom);
+            projections.forEach((p, i) => {
+                const x = padding.left + i * xScale;
+                const y = height - padding.bottom - (p.ppfBalance + p.debtBalance) * yScale;
+                ctx.lineTo(x, y);
+            });
+            ctx.lineTo(padding.left + (projections.length - 1) * xScale, height - padding.bottom);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Draw stacked area chart for Equity (top)
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.6)'; // Green for Equity
+            ctx.beginPath();
+            ctx.moveTo(padding.left, height - padding.bottom);
+            projections.forEach((p, i) => {
+                const x = padding.left + i * xScale;
+                const y = height - padding.bottom - (p.ppfBalance + p.debtBalance + p.equityBalance) * yScale;
+                ctx.lineTo(x, y);
+            });
+            ctx.lineTo(padding.left + (projections.length - 1) * xScale, height - padding.bottom);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Draw total portfolio outline
+            ctx.strokeStyle = '#1a202c';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            projections.forEach((p, i) => {
+                const x = padding.left + i * xScale;
+                const y = height - padding.bottom - p.totalBalance * yScale;
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
+            
+            // Draw expenses line
+            ctx.strokeStyle = '#f56565';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            projections.forEach((p, i) => {
+                const x = padding.left + i * xScale;
+                const y = height - padding.bottom - p.annualExpenses * yScale;
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Legend
+            ctx.font = 'bold 14px Arial';
+            const legendX = width - padding.right - 150;
+            let legendY = padding.top;
+            
+            // Equity
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.6)';
+            ctx.fillRect(legendX, legendY, 20, 15);
+            ctx.fillStyle = '#2d3748';
+            ctx.textAlign = 'left';
+            ctx.fillText('Equity', legendX + 25, legendY + 12);
+            legendY += 25;
+            
+            // Debt
+            ctx.fillStyle = 'rgba(59, 130, 246, 0.6)';
+            ctx.fillRect(legendX, legendY, 20, 15);
+            ctx.fillStyle = '#2d3748';
+            ctx.fillText('Debt', legendX + 25, legendY + 12);
+            legendY += 25;
+            
+            // PPF
+            ctx.fillStyle = 'rgba(139, 92, 246, 0.6)';
+            ctx.fillRect(legendX, legendY, 20, 15);
+            ctx.fillStyle = '#2d3748';
+            ctx.fillText('PPF', legendX + 25, legendY + 12);
+            legendY += 25;
+            
+            // Expenses
+            ctx.strokeStyle = '#f56565';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(legendX, legendY + 7);
+            ctx.lineTo(legendX + 20, legendY + 7);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = '#2d3748';
+            ctx.fillText('Expenses', legendX + 25, legendY + 12);
+            
+            // Title
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#2d3748';
+            ctx.fillText('Portfolio Composition & Expenses Over Time', width / 2, 25);
+            
+            // X-axis label
+            ctx.font = '14px Arial';
+            ctx.fillText('Age', width / 2, height - 10);
+            
+            // Y-axis label
+            ctx.save();
+            ctx.translate(20, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Amount (₹ Crores)', 0, 0);
+            ctx.restore();
+        }
+        
+        // Display Monte Carlo batch results
+        function displayMonteCarloBatchResults(results, params) {
+            const summaryHTML = `
+                <div class="metrics">
+                    <div class="metric ${results.successRate >= 90 ? 'emerald' : results.successRate >= 75 ? 'blue' : 'red'}">
+                        <div class="metric-label">Success Rate</div>
+                        <div class="metric-value">${results.successRate.toFixed(1)}%</div>
+                    </div>
+                    <div class="metric ${results.failureRate <= 10 ? 'green' : results.failureRate <= 25 ? 'blue' : 'red'}">
+                        <div class="metric-label">Failure Rate</div>
+                        <div class="metric-value">${results.failureRate.toFixed(1)}%</div>
+                    </div>
+                    <div class="metric blue">
+                        <div class="metric-label">Total Runs</div>
+                        <div class="metric-value">${results.numRuns}</div>
+                    </div>
+                    <div class="metric ${results.failures > 0 ? 'red' : 'emerald'}">
+                        <div class="metric-label">Failures</div>
+                        <div class="metric-value">${results.failures} / ${results.numRuns}</div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <p><strong>Analysis:</strong></p>
+                    <ul style="margin-left: 20px; line-height: 1.8;">
+                        <li>✓ <strong>${results.successes}</strong> scenarios succeeded (portfolio lasted full ${params.yearsInRetirement} years)</li>
+                        <li>✗ <strong>${results.failures}</strong> scenarios failed (portfolio depleted early)</li>
+                        ${results.avgDepletionAge ? `<li>⚠️ Average depletion age in failed scenarios: <strong>${results.avgDepletionAge.toFixed(1)} years</strong></li>` : ''}
+                        ${results.avgFinalBalance ? `<li>💰 Average final balance in successful scenarios: <strong>${formatCurrency(results.avgFinalBalance)}</strong></li>` : ''}
+                        <li>📊 Confidence level: Your plan has a <strong>${results.successRate.toFixed(1)}%</strong> probability of success</li>
+                    </ul>
+                </div>
+            `;
+            
+            document.getElementById('monteCarloSummary').innerHTML = summaryHTML;
+            
+            // Draw histogram
+            drawMonteCarloHistogram(results, params);
+        }
+        
+        function drawMonteCarloHistogram(results, params) {
+            const canvas = document.getElementById('monteCarloChart');
+            const ctx = canvas.getContext('2d');
+            
+            const width = canvas.width = 1000;
+            const height = canvas.height = 400;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            const padding = { top: 40, right: 80, bottom: 60, left: 80 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+            
+            // Create histogram bins
+            const allAges = [...results.depletionAges];
+            const successfulRuns = results.successes;
+            
+            // Create bins for depletion ages
+            const minAge = params.retirementAge;
+            const maxAge = params.retirementAge + params.yearsInRetirement;
+            const numBins = 20;
+            const binWidth = (maxAge - minAge) / numBins;
+            
+            const bins = Array(numBins + 1).fill(0);
+            
+            results.depletionAges.forEach(age => {
+                const binIndex = Math.min(Math.floor((age - minAge) / binWidth), numBins - 1);
+                bins[binIndex]++;
+            });
+            
+            // Last bin is for successes
+            bins[numBins] = successfulRuns;
+            
+            const maxBinValue = Math.max(...bins);
+            
+            // Draw axes
+            ctx.strokeStyle = '#2d3748';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding.left, padding.top);
+            ctx.lineTo(padding.left, height - padding.bottom);
+            ctx.lineTo(width - padding.right, height - padding.bottom);
+            ctx.stroke();
+            
+            // Draw bars
+            const barWidth = chartWidth / (numBins + 1);
+            
+            bins.forEach((count, i) => {
+                if (count === 0) return;
+                
+                const x = padding.left + i * barWidth;
+                const barHeight = (count / maxBinValue) * chartHeight;
+                const y = height - padding.bottom - barHeight;
+                
+                // Color code: red for failures, green for successes
+                ctx.fillStyle = i === numBins ? 'rgba(16, 185, 129, 0.7)' : 'rgba(239, 68, 68, 0.7)';
+                ctx.fillRect(x + 2, y, barWidth - 4, barHeight);
+                
+                // Draw count on top of bar
+                ctx.fillStyle = '#2d3748';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                if (count > 0) {
+                    ctx.fillText(count.toString(), x + barWidth / 2, y - 5);
+                }
+            });
+            
+            // X-axis labels
+            ctx.fillStyle = '#4a5568';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            
+            for (let i = 0; i <= numBins; i += 2) {
+                const x = padding.left + i * barWidth + barWidth / 2;
+                let label;
+                if (i === numBins) {
+                    label = 'Success';
+                } else {
+                    const age = Math.round(minAge + i * binWidth);
+                    label = age.toString();
+                }
+                ctx.fillText(label, x, height - padding.bottom + 20);
+            }
+            
+            // Y-axis labels
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 5; i++) {
+                const y = height - padding.bottom - (chartHeight / 5) * i;
+                const value = Math.round((maxBinValue / 5) * i);
+                ctx.fillText(value.toString(), padding.left - 10, y + 4);
+            }
+            
+            // Title
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#2d3748';
+            ctx.fillText(`Distribution of Outcomes (${results.numRuns} Simulations)`, width / 2, 25);
+            
+            // X-axis label
+            ctx.font = '14px Arial';
+            ctx.fillText('Depletion Age / Outcome', width / 2, height - 10);
+            
+            // Y-axis label
+            ctx.save();
+            ctx.translate(20, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Number of Scenarios', 0, 0);
+            ctx.restore();
+            
+            // Legend
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'left';
+            
+            ctx.fillStyle = 'rgba(239, 68, 68, 0.7)';
+            ctx.fillRect(width - 150, 50, 15, 15);
+            ctx.fillStyle = '#2d3748';
+            ctx.fillText('Failed (Depleted)', width - 130, 62);
+            
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.7)';
+            ctx.fillRect(width - 150, 75, 15, 15);
+            ctx.fillStyle = '#2d3748';
+            ctx.fillText('Succeeded', width - 130, 87);
+        }
+        
+        // Add event listeners to all inputs
+        document.querySelectorAll('input, select').forEach(element => {
+            element.addEventListener('change', calculate);
+            element.addEventListener('input', calculate);
+        });
+        
+        // Show/hide Monte Carlo runs input based on model selection
+        document.getElementById('simulationModel').addEventListener('change', function() {
+            const monteCarloRunsInput = document.getElementById('monteCarloRunsInput');
+            const equityStdDevInput = document.getElementById('equityStdDevInput');
+            const debtStdDevInput = document.getElementById('debtStdDevInput');
+            
+            if (this.value === 'monteCarloBatch') {
+                monteCarloRunsInput.style.display = 'flex';
+                equityStdDevInput.style.display = 'flex';
+                debtStdDevInput.style.display = 'flex';
+            } else if (this.value === 'monteCarlo') {
+                monteCarloRunsInput.style.display = 'none';
+                equityStdDevInput.style.display = 'flex';
+                debtStdDevInput.style.display = 'flex';
+            } else {
+                monteCarloRunsInput.style.display = 'none';
+                equityStdDevInput.style.display = 'none';
+                debtStdDevInput.style.display = 'none';
+            }
+        });
+        
+        // Initial calculation
+        calculate();
+    </script>
+</body>
+</html>
